@@ -77,17 +77,47 @@ map.on('load', async () => {
         console.error('Error loading CSV:', error); // Handle errors
     }
 
+    const departures = d3.rollup(
+        trips,
+        (v) => v.length,
+        (d) => d.start_station_id,
+    );
+
+    const arrivals = d3.rollup(
+        trips,
+        (v) => v.length,
+        (d) => d.end_station_id,
+    );
+
+    stations = stations.map((station) => {
+        let id = station.short_name;
+        station.arrivals = arrivals.get(id) ?? 0;
+        station.departures = departures.get(id) ?? 0;
+        station.totalTraffic = station.arrivals + station.departures;
+        return station;
+    });
+
     const svg = d3.select('#map').select('svg');
+    const radiusScale = d3
+                        .scaleSqrt()
+                        .domain([0, d3.max(stations, (d) => d.totalTraffic)])
+                        .range([0, 25]);
     // Append circles to the SVG for each station
     const circles = svg.selectAll('circle')
-    .data(stations)
-    .enter()
-    .append('circle')
-    .attr('r', 5)               // Radius of the circle
-    .attr('fill', 'steelblue')  // Circle fill color
-    .attr('stroke', 'white')    // Circle border color
-    .attr('stroke-width', 1)    // Circle border thickness
-    .attr('opacity', 0.8);      // Circle opacity
+                        .data(stations)
+                        .enter()
+                        .append('circle')
+                        .attr('r', d => radiusScale(d.totalTraffic))               // Radius of the circle
+                        .attr('fill', 'steelblue')  // Circle fill color
+                        .attr('stroke', 'white')    // Circle border color
+                        .attr('stroke-width', 1)    // Circle border thickness
+                        .attr('opacity', 0.8)      // Circle opacity
+                        .each(function(d) {
+                            // Add <title> for browser tooltips
+                            d3.select(this)
+                            .append('title')
+                            .text(`${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
+                        });
 
     // Function to update circle positions when the map moves/zooms
     function updatePositions() {
@@ -98,57 +128,15 @@ map.on('load', async () => {
 
     // Initial position update when map loads
     updatePositions();
-
-//     const departures = d3.rollup(
-//         trips,
-//         (v) => v.length,
-//         (d) => d.start_station_id,
-//     );
-
-//     const arrivals = d3.rollup(
-//         trips,
-//         (v) => v.length,
-//         (d) => d.end_station_id,
-//     );
-
-//     stations = stations.map((station) => {
-//         let id = station.short_name;
-//         station.arrivals = arrivals.get(id) ?? 0;
-//         station.departures = departures.get(id) ?? 0;
-//         station.totalTraffic = station.arrivals + station.departures;
-//         return station;
-//     });
-
-//     console.log('Stations with Traffic:', stations);
-
-//     const radiusScale = d3
-//                         .scaleSqrt()
-//                         .domain([0, d3.max(stations, (d) => d.totalTraffic)])
-//                         .range([0, 25]);
-
-//     const circles = svg.selectAll('circle')
-//                         .data(stations)
-//                         .enter()
-//                         .append('circle')
-//                         .attr('r', d => radiusScale(d.totalTraffic))               // Radius of the circle
-//                         .attr('fill', 'steelblue')  // Circle fill color
-//                         .attr('stroke', 'white')    // Circle border color
-//                         .attr('stroke-width', 1)    // Circle border thickness
-//                         .attr('opacity', 0.8)      // Circle opacity
-//                         .each(function(d) {
-//                             // Add <title> for browser tooltips
-//                             d3.select(this)
-//                               .append('title')
-//                               .text(`${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
-//                           });
-
-    
-
     // Reposition markers on map interactions
     map.on('move', updatePositions);     // Update during map movement
     map.on('zoom', updatePositions);     // Update during zooming
     map.on('resize', updatePositions);   // Update on window resize
     map.on('moveend', updatePositions);  // Final adjustment after movement ends
+    
+
+    // console.log('Stations with Traffic:', stations);
+
     
 //     const timeSlider = document.getElementById('#time-slider');
 //     const selectedTime = document.getElementById('#selected-time');
