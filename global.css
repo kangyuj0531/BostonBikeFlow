@@ -42,18 +42,15 @@ svg circle {
 }
 
 header {
-    display: block;
+    display: flex; 
     gap: 1em; 
     align-items: baseline;
     margin-left: auto;
 }
 
 em {
-    display: block;
-    color: #666;
+    display: block; 
+    color: #888; 
+    font-style: italic; 
     text-align: right;
-}
-
-time{
-    display: block;
 }

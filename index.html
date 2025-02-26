@@ -13,15 +13,14 @@
 <body>
     <h1>🚴🏼‍♀️ Boston Bike Flow</h1>
     <p>An interactive map visualization of bike traffic in the Boston area during different times of the day.</p>
-    
-    <!-- Time filter -->
-    <!-- <header>
-    <label for="time-filter">Filter by time: 
-        <input type="range" id="time-filter" min="-1" max="1440">
-    </label>
-    <time></time>
-    <div><em>(any time)</em></div>
-    </header> -->
+    <header>
+        <label>
+            Filter by time:
+            <input type="range" min="-1" max="1440" id='time-slider' style="width: 300px;">
+            <time id="selected-time" style="display: block; text-align: right;"></time>
+            <em id="any-time">(any time)</em>
+        </label>
+    </header>
     
     <div id="map">
         <svg></svg>
