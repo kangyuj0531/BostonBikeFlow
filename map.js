@@ -18,37 +18,37 @@ const map = new mapboxgl.Map({
     maxZoom: 18 // Maximum allowed zoom
 });
 
-// const bikeLanesStyle = {
-//     'line-color': 'green',
-//     'line-width': 3,
-//     'line-opacity': 0.4
-// };
+const bikeLanesStyle = {
+    'line-color': 'green',
+    'line-width': 3,
+    'line-opacity': 0.4
+};
 
-// map.on('load', async () => {
-//     map.addSource('boston_route', {
-//         type: 'geojson',
-//         data: 'https://bostonopendata-boston.opendata.arcgis.com/datasets/boston::existing-bike-network-2022.geojson?'
-//     });
+map.on('load', async () => {
+    map.addSource('boston_route', {
+        type: 'geojson',
+        data: 'https://bostonopendata-boston.opendata.arcgis.com/datasets/boston::existing-bike-network-2022.geojson?'
+    });
 
-//     map.addLayer({
-//         id: 'bike-lanes',
-//         type: 'line',
-//         source: 'boston_route',
-//         paint: bikeLanesStyle
-//     });
+    map.addLayer({
+        id: 'bike-lanes',
+        type: 'line',
+        source: 'boston_route',
+        paint: bikeLanesStyle
+    });
 
-//     // Add Cambridge bike lanes source and layer
-//     map.addSource('cambridge_route', {
-//         type: 'geojson',
-//         data: 'https://raw.githubusercontent.com/cambridgegis/cambridgegis_data/main/Recreation/Bike_Facilities/RECREATION_BikeFacilities.geojson' // Replace with the actual URL to Cambridge bike lanes GeoJSON data
-//     });
+    // Add Cambridge bike lanes source and layer
+    map.addSource('cambridge_route', {
+        type: 'geojson',
+        data: 'https://raw.githubusercontent.com/cambridgegis/cambridgegis_data/main/Recreation/Bike_Facilities/RECREATION_BikeFacilities.geojson' // Replace with the actual URL to Cambridge bike lanes GeoJSON data
+    });
 
-//     map.addLayer({
-//         id: 'cambridge-bike-lanes',
-//         type: 'line',
-//         source: 'cambridge_route',
-//         paint: bikeLanesStyle
-//     });
+    map.addLayer({
+        id: 'cambridge-bike-lanes',
+        type: 'line',
+        source: 'cambridge_route',
+        paint: bikeLanesStyle
+    });
 
 //     let jsonData;
 //     try {
@@ -141,7 +141,7 @@ const map = new mapboxgl.Map({
 //     const timeSlider = document.getElementById('#time-slider');
 //     const selectedTime = document.getElementById('#selected-time');
 //     const anyTimeLabel = document.getElementById('#any-time');
-// });
+});
 
 // function getCoords(station) {
 //     const point = new mapboxgl.LngLat(+station.lon, +station.lat);  // Convert lon/lat to Mapbox LngLat
