@@ -83,6 +83,7 @@ map.on('load', async () => {
       );
 
     const stations = computeStationTraffic(jsonData.data.stations);
+    let stationFlow = d3.scaleQuantize().domain([0, 1]).range([0, 0.5, 1]);
 
     const svg = d3.select('#map').select('svg');
     const radiusScale = d3
@@ -104,7 +105,8 @@ map.on('load', async () => {
                             d3.select(this)
                             .append('title')
                             .text(`${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
-                        });
+                        })
+                        .style("--departure-ratio", d => stationFlow(d.departures / d.totalTraffic)) ;
 
     // Function to update circle positions when the map moves/zooms
     function updatePositions() {
@@ -149,7 +151,10 @@ map.on('load', async () => {
         circles
             .data(filteredStations, (d) => d.short_name)  // Ensure D3 tracks elements correctly
             .join('circle') // Ensure the data is bound correctly
-            .attr('r', (d) => radiusScale(d.totalTraffic)); // Update circle sizes
+            .attr('r', (d) => radiusScale(d.totalTraffic))
+            .style('--departure-ratio', (d) =>
+                stationFlow(d.departures / d.totalTraffic),
+            );; // Update circle sizes
     }
 
     timeSlider.addEventListener('input', updateTimeDisplay);
@@ -167,27 +172,9 @@ function formatTime(minutes) {
     return date.toLocaleString('en-US', { timeStyle: 'short' }); // Format as HH:MM AM/PM
 }
 
-
-
 function minutesSinceMidnight(date) {
     return date.getHours() * 60 + date.getMinutes();
   }
-
-// function filterTripsbyTime(trips, timeFilter) {
-// return timeFilter === -1 
-//     ? trips // If no filter is applied (-1), return all trips
-//     : trips.filter((trip) => {
-//         // Convert trip start and end times to minutes since midnight
-//         const startedMinutes = minutesSinceMidnight(trip.started_at);
-//         const endedMinutes = minutesSinceMidnight(trip.ended_at);
-        
-//         // Include trips that started or ended within 60 minutes of the selected time
-//         return (
-//         Math.abs(startedMinutes - timeFilter) <= 60 ||
-//         Math.abs(endedMinutes - timeFilter) <= 60
-//         );
-//     });
-// }
 
 let departuresByMinute = Array.from({ length: 1440 }, () => []);
 let arrivalsByMinute = Array.from({ length: 1440 }, () => []);
@@ -234,3 +221,4 @@ function computeStationTraffic(stations, timeFilter = -1) {
     return station;
 });
 }
+

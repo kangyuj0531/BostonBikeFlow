@@ -36,7 +36,7 @@ html, body {
 
 svg circle {
     fill-opacity: 60%;
-    fill: steelblue;
+    fill: var(--color);
     stroke: white;
     pointer-events: auto;
 }
@@ -53,4 +53,42 @@ em {
     color: #888; 
     font-style: italic; 
     text-align: right;
+}
+
+#map circle,
+.legend > div {
+    --color-departures: steelblue;
+    --color-arrivals: darkorange;
+    --color: color-mix(
+        in oklch,
+        var(--color-departures) calc(100% * var(--departure-ratio)),
+        var(--color-arrivals)
+    );
+}
+
+.legend {
+    display: flex;
+    width: 100%;
+    border-radius: 4px;
+    margin-block: 1em;
+    color: white;
+}
+
+.legend > div {
+    flex: 1; 
+    padding: 0.5em 1em; 
+    text-align: center;
+    background-color: color-mix(
+        in oklch,
+        var(--color-departures) calc(100% * var(--departure-ratio)),
+        var(--color-arrivals)
+    );
+}
+
+.legend > div:first-child {
+    text-align: left; 
+}
+
+.legend > div:last-child {
+    text-align: right; 
 }
